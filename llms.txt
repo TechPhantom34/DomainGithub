@@ -1,0 +1,12 @@
+# Site Adı: [Buraya sitenizin adını yazın]
+
+Siteme hoş geldiniz. Bu siteyi eğlendirmek için kurdum
+## Hakkında
+[Buraya siteniz hakkında 2-3 cümlelik bir özet yazın.]
+
+## Ana İçerikler
+Amaç: Eğlendirmek 
+- [İçerik 2 başlığı]: Güzel oyunlar yapmak
+
+## İletişim
+https://nosite.qzz.io
