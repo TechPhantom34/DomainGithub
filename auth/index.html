@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Website Login</title>
+    <!-- 1. Load the official free Supabase script -->
+    <script src="https://jsdelivr.net"></script>
+</head>
+<body>
+
+    <!-- 2. The Official-looking Apple Login Button -->
+    <button onclick="loginWithApple()" style="background-color: #000000; color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500; font-size: 16px; padding: 12px 24px; border: none; border-radius: 6px; display: inline-flex; align-items: center; cursor: pointer; width: 260px; justify-content: center;">
+        <svg viewBox="0 0 170 170" style="width: 18px; height: 18px; fill: #FFFFFF; margin-right: 10px;">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.34.13-9.13-1.92-14.36-6.13-3.34-2.7-7.23-7.44-11.67-14.21-7.16-10.96-12.3-23.73-15.41-38.31-3.12-14.57-2.31-27.12 2.41-37.66 4.71-10.53 11.41-15.89 20.1-16.09 4.13 0 8.94 1.25 14.43 3.75 5.49 2.51 9.17 3.75 11.05 3.75 1.68 0 5.66-1.35 11.94-4.04 6.28-2.7 11.27-3.95 14.97-3.76 13.43.58 23.63 5.44 30.61 14.58-11.45 6.94-17.02 16.36-16.7 28.27.32 9.69 3.99 17.7 11.01 24.04 7.02 6.34 15.35 9.77 24.99 10.28-2.26 6.55-5.39 13.06-9.41 19.53zM119.22 33.54c0-7.85 2.76-14.86 8.29-21.03 5.53-6.17 12.28-9.74 20.25-10.7 1.15 8.14-1.74 15.48-8.66 22.04-5.42 5.16-12.16 8.35-20.22 7.55-.38-1.5-.57-3.04-.57-4.56z"/>
+        </svg>
+        Sign in with Apple
+    </button>
+
+    <!-- 3. Connect to your Supabase project -->
+    <script>
+        // Go to Supabase Project Settings -> API to find these keys
+        const SUPABASE_URL = 'https://prticootpxkzxsoucxsu.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_DWVPHjpoAd8Z_O-6Cyzygg_ZJyBpBe-';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 4. Run the official Apple OAuth script when clicked
+        async function loginWithApple() {
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'apple',
+                options: {
+                    // Where to send the user after they successfully login
+                    redirectTo: window.location.origin + '/dashboard.html' 
+                }
+            });
+
+            if (error) {
+                alert("Login Error: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
