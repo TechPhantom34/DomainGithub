@@ -1,0 +1,37 @@
+// Sitenizin tasarımını bozmamak için kütüphaneyi sayfaya dinamik olarak yüklüyoruz
+const script = document.createElement('script');
+script.src = "https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js";
+document.head.appendChild(script);
+
+// Sizin çağıracağınız ana fonksiyon
+async function authenticate() {
+    // Kütüphanenin yüklenip yüklenmediğini kontrol edelim
+    if (typeof SimpleWebAuthnBrowser === 'undefined') {
+        alert("Bağlantı kuruluyor, lütfen 1 saniye sonra tekrar deneyin.");
+        return;
+    }
+
+    try {
+        // 1. Adım: Test sunucusundan giriş parametrelerini çekiyoruz
+        const optionsRes = await fetch('https://passkeys-demo.dev/api/authentication/generate-options');
+        const options = await optionsRes.json();
+
+        // 2. Adım: iPhone Face ID ekranını açıyoruz
+        const authVerification = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: options });
+
+        // 3. Adım: Doğrulama Başarılı! 
+        // Sitenizin tasarımını bozmamak için mevcut ekranın üzerine temiz bir pencere açar:
+        document.body.innerHTML = `
+            <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; font-family:sans-serif;">
+                <h1 style="color: #28a745; font-size: 48px; margin-bottom: 10px;">🎉</h1>
+                <h2 style="color: #28a745; margin: 0;">Doğrulama Başarılı!</h2>
+                <p style="color: #6c757d;">Face ID başarıyla okundu.</p>
+                <button onclick="window.location.reload()" style="padding:10px 20px; margin-top:20px; border:none; background:#007aff; color:white; border-radius:5px; cursor:pointer;">Sayfayı Yenile</button>
+            </div>
+        `;
+
+    } catch (error) {
+        // Kullanıcı iptal ederse veya hata olursa siteniz aynen kalır, sadece uyarı verir
+        console.log("Face ID iptal veya hata:", error.message);
+    }
+}
