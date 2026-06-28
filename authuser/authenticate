@@ -1,47 +1,42 @@
-// Kütüphaneyi sayfaya ekliyoruz
-if (!document.getElementById('simplewebauthn-script')) {
-    const script = document.createElement('script');
-    script.id = 'simplewebauthn-script';
-    script.src = "https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js";
-    document.head.appendChild(script);
-}
-
 async function authenticate() {
-    // Güvenli bağlantı kontrolü (HTTPS)
-    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        alert("🚨 Face ID sadece HTTPS (Güvenli) bağlantılarda veya Localhost üzerinde çalışır!");
-        return;
-    }
-
-    // Kütüphane yüklenme kontrolü
     if (typeof SimpleWebAuthnBrowser === 'undefined') {
-        alert("Bağlantı kuruluyor veya kütüphane engellendi. Lütfen 2 saniye sonra tekrar deneyin.");
+        alert("Kütüphane hazır değil, lütfen 1 saniye sonra deneyin.");
         return;
     }
 
     try {
-        // Test sunucusundan veri çekme
-        const optionsRes = await fetch('https://passkeys-demo.dev/api/authentication/generate-options');
-        if (!optionsRes.ok) throw new Error("Test sunucusuna bağlanılamadı (CORS veya Ağ Hatası).");
-        
-        const options = await optionsRes.json();
+        // iPhone'a sıfırdan Face ID / Passkey kaydetme komutları
+        const sahteKayitSecenekleri = {
+            challenge: "Z2g2YjNnNGg1ajZrN2w4bTluMG8xcDJxM3I0czV0NnU",
+            rp: { name: "Benim Test Sitem", id: window.location.hostname },
+            user: {
+                id: "MTIzNDU", // Kullanıcı ID'si (Base64)
+                name: "test@user.com",
+                displayName: "Test Kullanicisi"
+            },
+            pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256 algoritması
+            timeout: 60000,
+            userVerification: "preferred"
+        };
 
-        // Face ID tetikleme
-        const authVerification = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: options });
+        // İŞTE iPHONE'A "YENİ PASSKEY OLUŞTUR" DİYEN ANA KOD:
+        const regVerification = await SimpleWebAuthnBrowser.startRegistration({ 
+            optionsJSON: sahteKayitSecenekleri 
+        });
 
-        // Başarılı ekranı
+        // Başarılı olursa ekranı kapla
         document.body.innerHTML = `
             <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; font-family:sans-serif;">
-                <h1 style="color: #28a745; font-size: 48px; margin-bottom: 10px;">🎉</h1>
-                <h2 style="color: #28a745; margin: 0;">Doğrulama Başarılı!</h2>
-                <p style="color: #6c757d;">Face ID başarıyla okundu.</p>
-                <button onclick="window.location.reload()" style="padding:10px 20px; margin-top:20px; border:none; background:#007aff; color:white; border-radius:5px; cursor:pointer;">Sayfayı Yenile</button>
+                <h1 style="color: #28a745; font-size: 58px; margin-bottom: 10px;">🎉</h1>
+                <h2 style="color: #28a745; margin: 0;">Kayıt Başarılı!</h2>
+                <p style="color: #6c757d; margin-top:10px;">iPhone bu site için bir Geçiş Anahtarı üretti.</p>
+                <button onclick="window.location.reload()" style="padding:12px 24px; margin-top:25px; border:none; background:#007aff; color:white; border-radius:8px; cursor:pointer;">Kapat</button>
             </div>
         `;
 
     } catch (error) {
-        // Detaylı hatayı ekrana basıyoruz ki sorunu anlayalım
-        alert("Hata Detayı: " + error.message);
-        console.error("Detaylı Hata:", error);
+        // Konsoldaki o gizemli hatayı yakalayıp alert ile ekrana basıyoruz
+        alert("Hata Kodu: " + error.name + "\nMesaj: " + error.message);
+        console.error(error);
     }
 }
