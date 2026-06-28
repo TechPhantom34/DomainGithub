@@ -12,7 +12,7 @@ async function authenticate() {
             user: {
                 id: "MTIzNDU", // Kullanıcı ID'si (Base64)
                 name: "Kilit Açıcı",
-                displayName: Kilit Açıcı"
+                displayName: "Kilit Açıcı"
             },
             pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256 algoritması
             timeout: 60000,
